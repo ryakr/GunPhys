@@ -1,0 +1,9 @@
+*.dmp
+*.log
+Intermediate/
+Content/
+Saved/
+Binaries/
+IronbellyWeapons_README.txt
+GunPhys.sdf
+.vs/GunPhys/v14/.suo
