@@ -13,6 +13,10 @@ class GUNPHYS_API UGunPhysicsNode : public UBlueprintFunctionLibrary
 	GENERATED_UCLASS_BODY()
 		UFUNCTION(BlueprintCallable, meta = (DisplayName = "Add Heat To Barrel", Keywords = "Angle Between Vectors"), Category = "Bullet Physics")
 		static bool Shot(UGunPhysics* GunComponent);
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Cool Barrel", Keywords = "Angle Between Vectors"), Category = "Bullet Physics")
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Accuracy", Keywords = "Angle Between Vectors"), Category = "Bullet Physics")
 		static float Accuracy(UGunPhysics* GunComponent, UArrowComponent* FireArrow);
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "MathTester", Keywords = "Angle Between Vectors"), Category = "Bullet Physics")
+		static float MathTester(UGunPhysics* GunComponent);
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "New Mag", Keywords = "Angle Between Vectors"), Category = "Bullet Physics")
+		static bool NewMag(UGunPhysics* GunComponent);
 };

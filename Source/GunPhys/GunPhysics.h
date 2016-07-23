@@ -17,20 +17,34 @@ public:
 
 
 	//Temprature of Barrel
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponPhysics)
 	float GunTemprature;
+	//Temprature of the Magazine
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponPhysics)
+		float MagTemprature;
 	//Changable Area Temprature
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponPhysics)
 	float EnviromentTemprature;
-	//The Point Where Problems Begin
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+	//Max Gun Temprature
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponPhysics)
 	float MaxTemp;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+	//Temprature Where Barrel Damage Slowly Occurs. Called Every Tick
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponPhysics)
+	float DamagePoint;
+	//1-100, amount of damage to the barrel of the gun
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponPhysics)
 	float BarrelDamage;
-
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = ProjectileBounces)
+	//1-100, amount of damage to the barrel of the gun
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponPhysics)
+		float CoolingConstant;
+	//Gun cools faster with new mag, adjust accordingly
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponPhysics)
+		float CoolingConstantNewMag;
+	//true if the gun is running a cold mag
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponPhysics)
+		bool RunningCoolMag;
+	//should temprature be counted, or stay and the default setting?
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponPhysics)
 	uint32 bShouldCountTemp : 1;
 
 	// Called when the game starts

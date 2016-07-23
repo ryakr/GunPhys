@@ -21,6 +21,11 @@ UGunPhysics::UGunPhysics()
 	Time = 0;
 	EnviromentTemprature = 70;
 	BarrelDamage = 0;
+	DamagePoint = 300;
+	CoolingConstant = 0.01771;
+	CoolingConstantNewMag = 0.03771;
+	RunningCoolMag = false;
+	MagTemprature = 0;
 }
 
 
@@ -39,14 +44,28 @@ void UGunPhysics::TickComponent( float DeltaTime, ELevelTick TickType, FActorCom
 	Super::TickComponent( DeltaTime, TickType, ThisTickFunction );
 	//cooling function begin
 	Time = DeltaTime + Time;
-	if (Time >= 1) {
+	if (Time >= 1 && bShouldCountTemp == true) {
 		Time -= Time;
-		if (GunTemprature > EnviromentTemprature) {
-			GunTemprature -= UKismetMathLibrary::RandomFloatInRange(0.5, 1.67);
+		if (GunTemprature > EnviromentTemprature && RunningCoolMag== false) {
+			float answer2 = exp(-(CoolingConstant * 1));
+			GunTemprature = EnviromentTemprature + (GunTemprature - EnviromentTemprature) * answer2;
+		}
+		if (GunTemprature > EnviromentTemprature && RunningCoolMag == true) {
+			float answer2 = exp(-(CoolingConstantNewMag * 1));
+			GunTemprature = EnviromentTemprature + (GunTemprature - EnviromentTemprature) * answer2;
+		}
+		if (MagTemprature < GunTemprature) {
+			MagTemprature += pow((GunTemprature - MagTemprature), 0.5);
+		}
+		if (MagTemprature > GunTemprature) {
+			MagTemprature -= pow((MagTemprature - GunTemprature), 0.2);
+		}
+		if (MagTemprature == GunTemprature) {
+			RunningCoolMag = false;
 		}
 	}
 	//cooling function end
-	if (GunTemprature >= 300)
+	if (GunTemprature >= DamagePoint && bShouldCountTemp == true)
 	{
 		BarrelDamage += 0.0005;
 	}
