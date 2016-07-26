@@ -34,7 +34,7 @@ public:
 	//1-100, amount of damage to the barrel of the gun
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponPhysics)
 	float BarrelDamage;
-	//1-100, amount of damage to the barrel of the gun
+	//Cooling Constant Of the Metal
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponPhysics)
 		float CoolingConstant;
 	//Gun cools faster with new mag, adjust accordingly
@@ -46,10 +46,16 @@ public:
 	//should temprature be counted, or stay and the default setting?
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponPhysics)
 	uint32 bShouldCountTemp : 1;
-
+	//bool checked to see if the gun has been Jammed
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponPhysics)
+		bool Jammed;
+	//tick for seting the mag temp
+	UPROPERTY()
+		FTimerHandle MagTick;
 	// Called when the game starts
 	virtual void BeginPlay() override;
-	
+	//EndPlay Reset
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason);
 	// Called every frame
 	virtual void TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
@@ -61,6 +67,8 @@ public:
 		virtual void Accuracy(UArrowComponent* FireArrow);
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "New Mag", Keywords = "New Mag"), Category = "Gun Physics")
 		virtual void NewMag();
+	UFUNCTION(meta = (DisplayName = "New Mag", Keywords = "New Mag"), Category = "Gun Physics")
+		virtual void AddHeat();
 	UPROPERTY(EditAnywhere)
 		float Time;
 };

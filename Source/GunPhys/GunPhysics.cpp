@@ -12,7 +12,7 @@ UGunPhysics::UGunPhysics()
 	bWantsBeginPlay = true;
 	PrimaryComponentTick.bCanEverTick = true;
 	//Start Gun Temp
-	GunTemprature = 0;
+	GunTemprature = 70;
 	//600F = Max Temp
 	MaxTemp = 600;
 	//By Default Temp Affects Weapon
@@ -25,7 +25,7 @@ UGunPhysics::UGunPhysics()
 	CoolingConstant = 0.01771;
 	CoolingConstantNewMag = 0.03771;
 	RunningCoolMag = false;
-	MagTemprature = 0;
+	MagTemprature = 70;
 }
 
 
@@ -34,6 +34,14 @@ void UGunPhysics::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+void UGunPhysics::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	// Ensure the MagTick timer is cleared
+	GetWorld()->GetTimerManager().ClearTimer(MagTick);
+
 }
 void UGunPhysics::testing(bool test)
 {
@@ -91,17 +99,23 @@ void UGunPhysics::Accuracy(UArrowComponent* FireArrow)
 }
 void UGunPhysics::NewMag()
 {
+	GetWorld()->GetTimerManager().SetTimer(MagTick, this, &UGunPhysics::AddHeat, 1.5f, false);
+	return;
+}
+void UGunPhysics::AddHeat()
+{
 	MagTemprature = EnviromentTemprature;
 	if (MagTemprature == GunTemprature) {
 		RunningCoolMag = false;
+		GetWorld()->GetTimerManager().ClearTimer(MagTick);
 		return;
 	}
 	else {
 		RunningCoolMag = true;
+		GetWorld()->GetTimerManager().ClearTimer(MagTick);
 		return;
 	}
 }
-
 void UGunPhysics::TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction )
 {
 	Super::TickComponent( DeltaTime, TickType, ThisTickFunction );
@@ -109,21 +123,21 @@ void UGunPhysics::TickComponent( float DeltaTime, ELevelTick TickType, FActorCom
 	Time = DeltaTime + Time;
 	if (Time >= 1 && bShouldCountTemp == true) {
 		Time -= Time;
-		if (GunTemprature > EnviromentTemprature && RunningCoolMag== false) {
+		if (GunTemprature > EnviromentTemprature && !RunningCoolMag) {
 			float answer2 = exp(-(CoolingConstant * 1));
 			GunTemprature = EnviromentTemprature + (GunTemprature - EnviromentTemprature) * answer2;
 		}
-		if (GunTemprature > EnviromentTemprature && RunningCoolMag == true) {
+		if (GunTemprature > EnviromentTemprature && RunningCoolMag) {
 			float answer2 = exp(-(CoolingConstantNewMag * 1));
 			GunTemprature = EnviromentTemprature + (GunTemprature - EnviromentTemprature) * answer2;
 		}
-		if (MagTemprature < GunTemprature) {
+		if (MagTemprature < (GunTemprature - 1)) {
 			MagTemprature += pow((GunTemprature - MagTemprature), 0.5);
 		}
-		if (MagTemprature > GunTemprature) {
+		else if (MagTemprature > (GunTemprature + 1)) {
 			MagTemprature -= pow((MagTemprature - GunTemprature), 0.2);
 		}
-		if (MagTemprature == GunTemprature) {
+		else if (MagTemprature < (GunTemprature + 1) && (MagTemprature > (MagTemprature - 1))) {
 			RunningCoolMag = false;
 		}
 	}
