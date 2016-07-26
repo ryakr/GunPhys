@@ -3,7 +3,7 @@
 #include "GunPhys.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "GunPhysics.h"
-
+#include "Components/ArrowComponent.h"
 
 // Sets default values for this component's properties
 UGunPhysics::UGunPhysics()
@@ -35,9 +35,72 @@ void UGunPhysics::BeginPlay()
 	Super::BeginPlay();
 	
 }
+void UGunPhysics::testing(bool test)
+{
+	return;
+}
+void UGunPhysics::Shot()
+{
+	float heatcoe = 0.2;
+	if (GunTemprature <= EnviromentTemprature && bShouldCountTemp == true)
+	{
+		GunTemprature = UKismetMathLibrary::RandomFloatInRange(0.5, 2) + 199.68;
+		return;
+	}
+	if (GunTemprature >= 199.68 && bShouldCountTemp) {
+		GunTemprature += pow(199.68, heatcoe);
+		return;
+	}
+	if (GunTemprature <= 199.68 && bShouldCountTemp) {
+		GunTemprature += UKismetMathLibrary::RandomFloatInRange(1, 5) + pow(GunTemprature, 0.3);
+		return;
+		if (GunTemprature <= 150) {
+			GunTemprature += UKismetMathLibrary::RandomFloatInRange(1, 5) + pow(GunTemprature, 0.3);
+			return;
+			if (GunTemprature <= 100) {
+				GunTemprature += UKismetMathLibrary::RandomFloatInRange(1, 5) + pow(GunTemprature, 0.4);
+				return;
+			}
+		}
+	}
+	return;
+}
+void UGunPhysics::Accuracy(UArrowComponent* FireArrow)
+{
+	FRotator Default = UKismetMathLibrary::MakeRotator(0, 0, 90);
+	float random = UKismetMathLibrary::RandomFloatInRange(0, 0.5);
+	if (GunTemprature >= 200) {
+		if (random >= 0.4) {
+			float pitch = UKismetMathLibrary::RandomFloatInRange(-0.5, 0.5);
+			float yaw = UKismetMathLibrary::RandomFloatInRange(-0.5, 0.5);
+			pitch += (GunTemprature * 0.005);
+			yaw += (GunTemprature * 0.005);
+			FireArrow->AddRelativeRotation(UKismetMathLibrary::MakeRotator(0, pitch, yaw));
+			return;
+		}
+		else {
+			FireArrow->SetRelativeRotation(Default);
+			return;
+		}
+	}
+	else {
+		FireArrow->SetRelativeRotation(Default);
+		return;
+	}
 
-
-// Called every frame
+}
+void UGunPhysics::NewMag()
+{
+	MagTemprature = EnviromentTemprature;
+	if (MagTemprature == GunTemprature) {
+		RunningCoolMag = false;
+		return;
+	}
+	else {
+		RunningCoolMag = true;
+		return;
+	}
+}
 
 void UGunPhysics::TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction )
 {

@@ -53,6 +53,14 @@ public:
 	// Called every frame
 	virtual void TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	UFUNCTION(BlueprintCallable, Category = "Test")
+		virtual void testing(bool test);
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Add Heat To Barrel", Keywords = "Add Heat To Barrel"), Category = "Gun Physics")
+		virtual void Shot();
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Accuracy", Keywords = "Accuracy"), Category = "Gun Physics")
+		virtual void Accuracy(UArrowComponent* FireArrow);
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "New Mag", Keywords = "New Mag"), Category = "Gun Physics")
+		virtual void NewMag();
 	UPROPERTY(EditAnywhere)
 		float Time;
 };
