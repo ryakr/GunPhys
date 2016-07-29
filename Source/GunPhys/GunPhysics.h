@@ -49,6 +49,18 @@ public:
 	//bool checked to see if the gun has been Jammed
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponPhysics)
 		bool Jammed;
+	//dud or delayed firing of round: wait 30 seconds then remove round
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponPhysics)
+		bool Jam_HangFire;
+	//Bullet stuck in barrel: Slide object into hole to not scratch the outside
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponPhysics)
+		bool Jam_Squib;
+	//Shell Not Ejected: Remove Mag and drop shell through Mag Hole
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponPhysics)
+		bool Jam_FTF;
+	//Shell Half Ejected: Remove Mag and pull back slide
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponPhysics)
+		bool Jam_Stovepipe;
 	//tick for seting the mag temp
 	UPROPERTY()
 		FTimerHandle MagTick;

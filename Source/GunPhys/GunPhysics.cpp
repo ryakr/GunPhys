@@ -50,13 +50,37 @@ void UGunPhysics::testing(bool test)
 void UGunPhysics::Shot()
 {
 	float heatcoe = 0.2;
-	if (GunTemprature <= EnviromentTemprature && bShouldCountTemp == true)
+	if (GunTemprature <= EnviromentTemprature && bShouldCountTemp)
 	{
 		GunTemprature = UKismetMathLibrary::RandomFloatInRange(0.5, 2) + 199.68;
 		return;
 	}
 	if (GunTemprature >= 199.68 && bShouldCountTemp) {
 		GunTemprature += pow(199.68, heatcoe);
+		if (UKismetMathLibrary::RandomIntegerInRange(1, (1000 / BarrelDamage)) == 5) {
+			if (UKismetMathLibrary::RandomIntegerInRange(1, 2) == 1) {
+				Jam_FTF = true;
+				Jammed = true;
+				return;
+			}
+			else {
+				Jam_Stovepipe = true;
+				Jammed = true;
+				return;
+			}
+		}
+		else if (UKismetMathLibrary::RandomIntegerInRange(1, (1500 / BarrelDamage)) == 5) {
+			if (UKismetMathLibrary::RandomIntegerInRange(1, 2) == 1) {
+				Jam_HangFire = true;
+				Jammed = true;
+				return;
+			}
+			else {
+				Jam_Squib = true;
+				Jammed = true;
+				return;
+			}
+		}
 		return;
 	}
 	if (GunTemprature <= 199.68 && bShouldCountTemp) {
@@ -121,7 +145,7 @@ void UGunPhysics::TickComponent( float DeltaTime, ELevelTick TickType, FActorCom
 	Super::TickComponent( DeltaTime, TickType, ThisTickFunction );
 	//cooling function begin
 	Time = DeltaTime + Time;
-	if (Time >= 1 && bShouldCountTemp == true) {
+	if (Time >= 1 && bShouldCountTemp) {
 		Time -= Time;
 		if (GunTemprature > EnviromentTemprature && !RunningCoolMag) {
 			float answer2 = exp(-(CoolingConstant * 1));
@@ -142,7 +166,7 @@ void UGunPhysics::TickComponent( float DeltaTime, ELevelTick TickType, FActorCom
 		}
 	}
 	//cooling function end
-	if (GunTemprature >= DamagePoint && bShouldCountTemp == true)
+	if (GunTemprature >= DamagePoint && bShouldCountTemp)
 	{
 		BarrelDamage += 0.0005;
 	}
