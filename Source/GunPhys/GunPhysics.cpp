@@ -47,6 +47,33 @@ void UGunPhysics::testing(bool test)
 {
 	return;
 }
+void UGunPhysics::Jam()
+{
+	if (UKismetMathLibrary::RandomIntegerInRange(1, (1000 / BarrelDamage)) == 5) {
+		if (UKismetMathLibrary::RandomIntegerInRange(1, 2) == 1) {
+			Jam_FTF = true;
+			Jammed = true;
+			return;
+		}
+		else {
+			Jam_Stovepipe = true;
+			Jammed = true;
+			return;
+		}
+	}
+	else if (UKismetMathLibrary::RandomIntegerInRange(1, (1500 / BarrelDamage)) == 5) {
+		if (UKismetMathLibrary::RandomIntegerInRange(1, 2) == 1) {
+			Jam_HangFire = true;
+			Jammed = true;
+			return;
+		}
+		else {
+			Jam_Squib = true;
+			Jammed = true;
+			return;
+		}
+	}
+}
 void UGunPhysics::Shot()
 {
 	float heatcoe = 0.2;
@@ -57,30 +84,7 @@ void UGunPhysics::Shot()
 	}
 	if (GunTemprature >= 199.68 && bShouldCountTemp) {
 		GunTemprature += pow(199.68, heatcoe);
-		if (UKismetMathLibrary::RandomIntegerInRange(1, (1000 / BarrelDamage)) == 5) {
-			if (UKismetMathLibrary::RandomIntegerInRange(1, 2) == 1) {
-				Jam_FTF = true;
-				Jammed = true;
-				return;
-			}
-			else {
-				Jam_Stovepipe = true;
-				Jammed = true;
-				return;
-			}
-		}
-		else if (UKismetMathLibrary::RandomIntegerInRange(1, (1500 / BarrelDamage)) == 5) {
-			if (UKismetMathLibrary::RandomIntegerInRange(1, 2) == 1) {
-				Jam_HangFire = true;
-				Jammed = true;
-				return;
-			}
-			else {
-				Jam_Squib = true;
-				Jammed = true;
-				return;
-			}
-		}
+		Jam();
 		return;
 	}
 	if (GunTemprature <= 199.68 && bShouldCountTemp) {

@@ -81,6 +81,8 @@ public:
 		virtual void NewMag();
 	UFUNCTION(meta = (DisplayName = "New Mag", Keywords = "New Mag"), Category = "Gun Physics")
 		virtual void AddHeat();
+	UFUNCTION(meta = (DisplayName = "New Mag", Keywords = "New Mag"), Category = "Gun Physics")
+		virtual void Jam();
 	UPROPERTY(EditAnywhere)
 		float Time;
 };
