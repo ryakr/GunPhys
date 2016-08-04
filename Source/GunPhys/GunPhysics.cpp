@@ -4,6 +4,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "GunPhysics.h"
 #include "Components/ArrowComponent.h"
+#include "Components/InputComponent.h"
 
 // Sets default values for this component's properties
 UGunPhysics::UGunPhysics()
@@ -26,8 +27,14 @@ UGunPhysics::UGunPhysics()
 	CoolingConstantNewMag = 0.03771;
 	RunningCoolMag = false;
 	MagTemprature = 70;
+	lay_mo = 17;
+	magazines = 0; 
 }
 
+void UGunPhysics::ChamberedRound()
+{
+	
+}
 
 // Called when the game starts
 void UGunPhysics::BeginPlay()
@@ -127,7 +134,12 @@ void UGunPhysics::Accuracy(UArrowComponent* FireArrow)
 }
 void UGunPhysics::NewMag()
 {
-	GetWorld()->GetTimerManager().SetTimer(MagTick, this, &UGunPhysics::AddHeat, 1.5f, false);
+	if (magazines > 0)
+	{
+		GetWorld()->GetTimerManager().SetTimer(MagTick, this, &UGunPhysics::AddHeat, 1.5f, false);
+		magazines -= 1;
+		return;
+	}
 	return;
 }
 void UGunPhysics::AddHeat()

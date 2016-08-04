@@ -83,6 +83,12 @@ public:
 		virtual void AddHeat();
 	UFUNCTION(meta = (DisplayName = "New Mag", Keywords = "New Mag"), Category = "Gun Physics")
 		virtual void Jam();
-	UPROPERTY(EditAnywhere)
+	UFUNCTION()
+		virtual void ChamberedRound();
+	UPROPERTY()
 		float Time;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gun Physics")
+		int32 lay_mo;  //new ammo name, blame windows handwriting for putting "may ammo". Glock 18 = 17
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gun Physics")
+		int32 magazines; 
 };
