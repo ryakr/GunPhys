@@ -180,6 +180,21 @@ void UGunPhysics::TickComponent( float DeltaTime, ELevelTick TickType, FActorCom
 		else if (MagTemprature < (GunTemprature + 1) && (MagTemprature > (MagTemprature - 1))) {
 			RunningCoolMag = false;
 		}
+		if (GunTemprature < EnviromentTemprature) {
+			float dt = EnviromentTemprature - GunTemprature;
+			float btu = 1.08 * (dt); //btu = 242 cal = 1012528 joules = 533.161883743966 C/hr = 991.6913907391387966 F/hr
+				btu /= 3600;
+				btu *= 242;
+				btu *= 4184;
+				btu /= 1899.1005;
+				btu = btu * 1.8 + 32;
+				// hs = 1.08 q dt
+				//hs = sensible heat(Btu / hr)
+				//q = air volume flow(cfm, cubic feet per minute)
+				//dt = temperature difference(oF)
+				GunTemprature += btu;
+		}
+			
 	}
 	//cooling function end
 	if (GunTemprature >= DamagePoint && bShouldCountTemp)
