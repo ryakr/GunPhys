@@ -5,6 +5,7 @@
 #include "GunPhysics.h"
 #include "Components/ArrowComponent.h"
 #include "Components/InputComponent.h"
+#include "Animation/AnimInstance.h"
 
 // Sets default values for this component's properties
 UGunPhysics::UGunPhysics()
@@ -20,6 +21,7 @@ UGunPhysics::UGunPhysics()
 	bShouldCountTemp = true;
 	bAutoActivate = true;
 	Time = 0;
+	Held = false;
 	EnviromentTemprature = 70;
 	BarrelDamage = 0;
 	DamagePoint = 300;
@@ -31,11 +33,44 @@ UGunPhysics::UGunPhysics()
 	magazines = 0; 
 }
 
-void UGunPhysics::ChamberedRound()
+void UGunPhysics::ChamberCheckPressed(UAnimInstance* Arms, UAnimInstance* Gun, UAnimMontage* Arm_Animation, UAnimMontage* Gun_Animation, float pausetime)
 {
+	FTimerDelegate ChamberDel;
 	
+	Held = true;
+	Arms->Montage_Play(Arm_Animation);
+	Gun->Montage_Play(Gun_Animation);
+	ChamberDel.BindUFunction(this, FName("PauseChamberCheck"), Arms, Gun, Arm_Animation, Gun_Animation);
+	GetWorld()->GetTimerManager().SetTimer(MontageTick, ChamberDel, pausetime, false);
+	return;
 }
 
+void UGunPhysics::ChamberCheckReleased(UAnimInstance* Arms, UAnimInstance* Gun, UAnimMontage* Arm_Animation, UAnimMontage* Gun_Animation)
+{
+	Held = false;
+	Arms->Montage_Resume(Arm_Animation);
+	Gun->Montage_Resume(Gun_Animation);
+	return;
+}
+
+void UGunPhysics::PauseChamberCheck(UAnimInstance* Arms, UAnimInstance* Gun, UAnimMontage* Arm_Animation, UAnimMontage* Gun_Animation)
+{
+	if (Held) 
+	{
+		Arms->Montage_Pause(Arm_Animation);
+		Gun->Montage_Pause(Gun_Animation);
+
+		if (!Held)
+		{
+			Arms->Montage_Resume(Arm_Animation);
+			Gun->Montage_Resume(Gun_Animation);
+			GetWorld()->GetTimerManager().ClearTimer(MontageTick);
+			return;
+		}
+		GetWorld()->GetTimerManager().ClearTimer(MontageTick);
+		return;
+	}
+}
 // Called when the game starts
 void UGunPhysics::BeginPlay()
 {
@@ -48,7 +83,7 @@ void UGunPhysics::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 	// Ensure the MagTick timer is cleared
 	GetWorld()->GetTimerManager().ClearTimer(MagTick);
-
+	GetWorld()->GetTimerManager().ClearTimer(MontageTick);
 }
 void UGunPhysics::testing(bool test)
 {

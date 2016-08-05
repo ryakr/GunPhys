@@ -15,7 +15,7 @@ public:
 	// Sets default values for this component's properties
 	UGunPhysics();
 
-
+	
 	//Temprature of Barrel
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponPhysics)
 	float GunTemprature;
@@ -64,6 +64,8 @@ public:
 	//tick for seting the mag temp
 	UPROPERTY()
 		FTimerHandle MagTick;
+	UPROPERTY()
+		FTimerHandle MontageTick;
 	// Called when the game starts
 	virtual void BeginPlay() override;
 	//EndPlay Reset
@@ -81,12 +83,27 @@ public:
 		virtual void NewMag();
 	UFUNCTION(meta = (DisplayName = "New Mag", Keywords = "New Mag"), Category = "Gun Physics")
 		virtual void AddHeat();
+	UFUNCTION(Category = "Gun Physics")
+		virtual void PauseChamberCheck(UAnimInstance* Arms, UAnimInstance* Gun, UAnimMontage* Arm_Animation, UAnimMontage* Gun_Animation);
 	UFUNCTION(meta = (DisplayName = "New Mag", Keywords = "New Mag"), Category = "Gun Physics")
 		virtual void Jam();
-	UFUNCTION()
-		virtual void ChamberedRound();
+	/**
+	* Perform a latent action with a delay (specified in seconds).  Calling again while it is counting down will be ignored.
+	*
+	* @param Arms	Arm Animation Instance.
+	* @param Gun 		Gun Animation Instance.
+	* @param Arm_Animation 	Arm Animation Montage.
+	* @param Gun_Animation 	Gun Animation Montage.
+	* @param pausetime 	Time into the animation to pause both the Gun and Arm montage.
+	*/
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Chamber Check For Pressed", Keywords = "Add Heat To Barrel"), Category = "Gun Physics")
+		virtual void ChamberCheckPressed(UAnimInstance* Arms, UAnimInstance* Gun, UAnimMontage* Arm_Animation, UAnimMontage* Gun_Animation, float pausetime);
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Chamber Check For Released", Keywords = "Add Heat To Barrel"), Category = "Gun Physics")
+		virtual void ChamberCheckReleased(UAnimInstance* Arms, UAnimInstance* Gun, UAnimMontage* Arm_Animation, UAnimMontage* Gun_Animation);
 	UPROPERTY()
 		float Time;
+	UPROPERTY()
+		bool Held;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gun Physics")
 		int32 lay_mo;  //new ammo name, blame windows handwriting for putting "may ammo". Glock 18 = 17
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gun Physics")
