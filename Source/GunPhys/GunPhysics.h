@@ -76,13 +76,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Test")
 		virtual void testing(bool test);
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Add Heat To Barrel", Keywords = "Add Heat To Barrel"), Category = "Gun Physics")
-		virtual void Shot();
+		virtual bool Shot();
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Accuracy", Keywords = "Accuracy"), Category = "Gun Physics")
 		virtual void Accuracy(UArrowComponent* FireArrow);
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "New Mag", Keywords = "New Mag"), Category = "Gun Physics")
-		virtual void NewMag();
+		virtual void NewMag(UStaticMeshComponent* Shell);
 	UFUNCTION(meta = (DisplayName = "New Mag", Keywords = "New Mag"), Category = "Gun Physics")
-		virtual void AddHeat();
+		virtual void AddHeat(UStaticMeshComponent* Shell);
 	UFUNCTION(Category = "Gun Physics")
 		virtual void PauseChamberCheck(UAnimInstance* Arms, UAnimInstance* Gun, UAnimMontage* Arm_Animation, UAnimMontage* Gun_Animation);
 	UFUNCTION(meta = (DisplayName = "New Mag", Keywords = "New Mag"), Category = "Gun Physics")
@@ -97,7 +97,7 @@ public:
 	* @param pausetime 	Time into the animation to pause both the Gun and Arm montage.
 	*/
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Chamber Check For Pressed", Keywords = "Add Heat To Barrel"), Category = "Gun Physics")
-		virtual void ChamberCheckPressed(UAnimInstance* Arms, UAnimInstance* Gun, UAnimMontage* Arm_Animation, UAnimMontage* Gun_Animation, float pausetime);
+		virtual void ChamberCheckPressed(UAnimInstance* Arms, UAnimInstance* Gun, UAnimMontage* Arm_Animation, UAnimMontage* Gun_Animation, float pausetime, UStaticMeshComponent* Shell);
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Chamber Check For Released", Keywords = "Add Heat To Barrel"), Category = "Gun Physics")
 		virtual void ChamberCheckReleased(UAnimInstance* Arms, UAnimInstance* Gun, UAnimMontage* Arm_Animation, UAnimMontage* Gun_Animation);
 	UPROPERTY()
@@ -108,4 +108,6 @@ public:
 		int32 lay_mo;  //new ammo name, blame windows handwriting for putting "may ammo". Glock 18 = 17
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gun Physics")
 		int32 magazines; 
+	UPROPERTY()
+		int32 bulletspermag;
 };

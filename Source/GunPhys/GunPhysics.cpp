@@ -29,14 +29,17 @@ UGunPhysics::UGunPhysics()
 	CoolingConstantNewMag = 0.03771;
 	RunningCoolMag = false;
 	MagTemprature = 70;
+	bulletspermag = 17;
 	lay_mo = 17;
 	magazines = 0; 
 }
 
-void UGunPhysics::ChamberCheckPressed(UAnimInstance* Arms, UAnimInstance* Gun, UAnimMontage* Arm_Animation, UAnimMontage* Gun_Animation, float pausetime)
+void UGunPhysics::ChamberCheckPressed(UAnimInstance* Arms, UAnimInstance* Gun, UAnimMontage* Arm_Animation, UAnimMontage* Gun_Animation, float pausetime, UStaticMeshComponent* Shell)
 {
 	FTimerDelegate ChamberDel;
-	
+	if (lay_mo == 0) {
+		Shell->SetVisibility(false);
+	}
 	Held = true;
 	Arms->Montage_Play(Arm_Animation);
 	Gun->Montage_Play(Gun_Animation);
@@ -116,32 +119,35 @@ void UGunPhysics::Jam()
 		}
 	}
 }
-void UGunPhysics::Shot()
+bool UGunPhysics::Shot()
 {
-	float heatcoe = 0.2;
-	if (GunTemprature <= EnviromentTemprature && bShouldCountTemp)
-	{
-		GunTemprature = UKismetMathLibrary::RandomFloatInRange(0.5, 2) + 199.68;
-		return;
-	}
-	if (GunTemprature >= 199.68 && bShouldCountTemp) {
-		GunTemprature += pow(199.68, heatcoe);
-		Jam();
-		return;
-	}
-	if (GunTemprature <= 199.68 && bShouldCountTemp) {
-		GunTemprature += UKismetMathLibrary::RandomFloatInRange(1, 5) + pow(GunTemprature, 0.3);
-		return;
-		if (GunTemprature <= 150) {
-			GunTemprature += UKismetMathLibrary::RandomFloatInRange(1, 5) + pow(GunTemprature, 0.3);
-			return;
-			if (GunTemprature <= 100) {
-				GunTemprature += UKismetMathLibrary::RandomFloatInRange(1, 5) + pow(GunTemprature, 0.4);
-				return;
-			}
+	if (lay_mo > 0) {
+		lay_mo -= 1;
+		if (GunTemprature >= 199.68 && bShouldCountTemp) {
+			float heatcoe = 0.2;
+			GunTemprature += pow(199.68, heatcoe);
+			Jam();
+			return true;
 		}
+		if (GunTemprature <= 199.68 && bShouldCountTemp) {
+			GunTemprature += UKismetMathLibrary::RandomFloatInRange(1, 5) + pow(GunTemprature, 0.3);
+			
+			if (GunTemprature <= 150) {
+				GunTemprature += UKismetMathLibrary::RandomFloatInRange(1, 5) + pow(GunTemprature, 0.3);
+				
+				if (GunTemprature <= 100) {
+					GunTemprature += UKismetMathLibrary::RandomFloatInRange(1, 5) + pow(GunTemprature, 0.4);
+					return true;
+				}
+			return true;
+			}
+		return true;
+		}
+		return true;
 	}
-	return;
+	else {
+		return false;
+	}
 }
 void UGunPhysics::Accuracy(UArrowComponent* FireArrow)
 {
@@ -167,18 +173,22 @@ void UGunPhysics::Accuracy(UArrowComponent* FireArrow)
 	}
 
 }
-void UGunPhysics::NewMag()
+void UGunPhysics::NewMag(UStaticMeshComponent* Shell)
 {
 	if (magazines > 0)
 	{
-		GetWorld()->GetTimerManager().SetTimer(MagTick, this, &UGunPhysics::AddHeat, 1.5f, false);
-		magazines -= 1;
+		FTimerDelegate ReloadDel;
+		ReloadDel.BindUFunction(this, FName("AddHeat"), Shell);
+		GetWorld()->GetTimerManager().SetTimer(MagTick, ReloadDel, 1.5f, false);
 		return;
 	}
 	return;
 }
-void UGunPhysics::AddHeat()
+void UGunPhysics::AddHeat(UStaticMeshComponent* Shell)
 {
+	magazines -= 1;
+	lay_mo = bulletspermag;
+	Shell->SetVisibility(true);
 	MagTemprature = EnviromentTemprature;
 	if (MagTemprature == GunTemprature) {
 		RunningCoolMag = false;

@@ -8,3 +8,4 @@ IronbellyWeapons_README.txt
 GunPhys.sdf
 .vs/GunPhys/v14/.suo
 GunPhys.VC.opendb
+*.cppcheck
