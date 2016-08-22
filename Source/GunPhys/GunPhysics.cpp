@@ -38,6 +38,10 @@ void UGunPhysics::ChamberCheckPressed(UAnimInstance* Arms, UAnimInstance* Gun, U
 {
 	FTimerDelegate ChamberDel;
 	if (lay_mo == 0) {
+		if (Shell == NULL) {
+			UE_LOG(LogStreaming, Log,
+				TEXT("Shell Not Defined In BP"));
+		}
 		Shell->SetVisibility(false);
 	}
 	Held = true;
@@ -177,6 +181,10 @@ void UGunPhysics::NewMag(UStaticMeshComponent* Shell)
 {
 	if (magazines > 0)
 	{
+		if (!Shell) {
+			UE_LOG(LogStreaming, Log,
+				TEXT("Shell Not Defined In BP"));
+		}
 		FTimerDelegate ReloadDel;
 		ReloadDel.BindUFunction(this, FName("AddHeat"), Shell);
 		GetWorld()->GetTimerManager().SetTimer(MagTick, ReloadDel, 1.5f, false);
@@ -190,14 +198,13 @@ void UGunPhysics::AddHeat(UStaticMeshComponent* Shell)
 	lay_mo = bulletspermag;
 	Shell->SetVisibility(true);
 	MagTemprature = EnviromentTemprature;
+	GetWorld()->GetTimerManager().ClearTimer(MagTick);
 	if (MagTemprature == GunTemprature) {
 		RunningCoolMag = false;
-		GetWorld()->GetTimerManager().ClearTimer(MagTick);
 		return;
 	}
 	else {
 		RunningCoolMag = true;
-		GetWorld()->GetTimerManager().ClearTimer(MagTick);
 		return;
 	}
 }
