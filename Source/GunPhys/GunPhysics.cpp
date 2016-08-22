@@ -6,6 +6,7 @@
 #include "Components/ArrowComponent.h"
 #include "Components/InputComponent.h"
 #include "Animation/AnimInstance.h"
+#include "Engine.h"
 
 // Sets default values for this component's properties
 UGunPhysics::UGunPhysics()
@@ -38,11 +39,12 @@ void UGunPhysics::ChamberCheckPressed(UAnimInstance* Arms, UAnimInstance* Gun, U
 {
 	FTimerDelegate ChamberDel;
 	if (lay_mo == 0) {
-		if (Shell == NULL) {
-			UE_LOG(LogStreaming, Log,
-				TEXT("Shell Not Defined In BP"));
+		if (Shell == nullptr) {
+			GEngine->AddOnScreenDebugMessage(-1, 50.f, FColor::Red, TEXT("Chamber Check Shell Input Is NULL, I Just Saved You From A Crash :)"));
 		}
+		else {
 		Shell->SetVisibility(false);
+		}
 	}
 	Held = true;
 	Arms->Montage_Play(Arm_Animation);
@@ -181,16 +183,18 @@ void UGunPhysics::NewMag(UStaticMeshComponent* Shell)
 {
 	if (magazines > 0)
 	{
-		if (!Shell) {
-			UE_LOG(LogStreaming, Log,
-				TEXT("Shell Not Defined In BP"));
+		if (Shell == nullptr) {
+			GEngine->AddOnScreenDebugMessage(-1, 50.f, FColor::Red, TEXT("New Mag Shell Input Is NULL, I Just Saved You From A Crash :)"));
+			return;
 		}
-		FTimerDelegate ReloadDel;
-		ReloadDel.BindUFunction(this, FName("AddHeat"), Shell);
-		GetWorld()->GetTimerManager().SetTimer(MagTick, ReloadDel, 1.5f, false);
+		else {
+			FTimerDelegate ReloadDel;
+			ReloadDel.BindUFunction(this, FName("AddHeat"), Shell);
+			GetWorld()->GetTimerManager().SetTimer(MagTick, ReloadDel, 1.5f, false);
+			return;
+		}
 		return;
 	}
-	return;
 }
 void UGunPhysics::AddHeat(UStaticMeshComponent* Shell)
 {
